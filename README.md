@@ -38,5 +38,5 @@ inliner('./index.js', (err, data) => {
 ## CLI
 
 ```sh
-$ node ./inliner ./main.js # prints to stdout
+$ node ./inliner ./index.js # prints to stdout
 ```
