@@ -7,7 +7,8 @@
     "build": "./node_modules/.bin/babel index.es --presets es2015,stage-0 > index.js",
     "prepublish": "yarn build && yarn test",
     "preversion": "yarn build && yarn test",
-    "test": "mocha ./tests"
+    "test": "mocha ./tests",
+    "all": "yarn build && mocha ./tests"
   },
   "bin": "./index.js",
   "repository": {

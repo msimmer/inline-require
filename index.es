@@ -1,7 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 
-const REGEXP_REQUIRE = new RegExp(/\brequire\s*\(\s*['"]([./]+[^'"]+)['"]\s*\)/)
+function Token({ begin, end, offset, value }) {
+    this.begin = begin
+    this.end = end
+    this.offset = offset
+    this.value = value
+}
 
 function inliner(fpath, callback) {
     if (!fpath || typeof fpath !== 'string') {
@@ -13,13 +18,15 @@ function inliner(fpath, callback) {
         return callback(new Error(`${fpath} does not exist, aborting`))
     }
 
-    fs.readFile(path.resolve(fpath), 'utf8', (err, data) => {
+    const re = /\brequire\s*\(\s*['"]([./]+[^'"]+)['"]\s*\)/g
+    const tokens = []
+
+    fs.readFile(path.resolve(fpath), 'utf8', (err, _data) => {
         if (err) { return callback(err) }
 
-        let contents = data
         let match
-
-        while ((match = REGEXP_REQUIRE.exec(contents))) {
+        let offset = 0
+        while ((match = re.exec(_data)) !== null) {
 
             const [requireDeclaration, relativePath] = match
             const dpath = `${path.resolve(path.resolve(path.dirname(fpath)), relativePath)}.js`
@@ -28,13 +35,27 @@ function inliner(fpath, callback) {
                 return callback(new Error(`Dependency [${dpath}] does not exist, aborting`))
             }
 
-            const dependency = JSON.stringify(require(dpath))
-            contents = contents.replace(requireDeclaration, dependency)
+            const required = require(dpath)
+            const dependency = typeof required === 'function' ? String(required) : JSON.stringify(required)
+
+            tokens.push(new Token({
+                begin: match.index + offset,
+                end: re.lastIndex + offset,
+                offset,
+                value: dependency,
+            }))
+
+            offset += dependency.length - requireDeclaration.length
 
         }
 
+        let token
+        let data = _data
+        while ((token = tokens.shift())) {
+            data = `${data.slice(0, token.begin)}${token.value}${data.slice(token.end)}`
+        }
 
-        return callback(null, contents)
+        return callback(null, data)
     })
 
 }
