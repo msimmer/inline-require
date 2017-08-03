@@ -1,17 +1,27 @@
 const should = require('chai').should()
 const path = require('path')
-const inline = require('../index')
+const exec = require('child_process').exec
+
+const index = process.env.NODE_ENV == 'coverage' ? '../index.es' : '../index'
+const inline = require(index)
 
 describe('inline-require', () => {
-    it('should write dependent modules to the parent module', (done) => {
-        inline(path.join(__dirname, 'index.js'), (err, contents) => {
+    it('should process local modules', (done) => {
+        inline(path.join(__dirname, 'local-dependencies.js'), (err, contents) => {
             should.equal(err, null)
-            contents.should.not.match(/require/)
+            contents.should.not.match(/require\('\./)
+            done()
+        })
+    })
+    it('should not process global modules', (done) => {
+        inline(path.join(__dirname, 'global-dependency.js'), (err, contents) => {
+            should.equal(err, null)
+            contents.should.match(/require\('fs/)
             done()
         })
     })
     it('should preserve the types of inlined dependencies', (done) => {
-        inline(path.join(__dirname, 'index.js'), (err, contents) => {
+        inline(path.join(__dirname, 'local-dependencies.js'), (err, contents) => {
 
             const mod = eval(contents)
 
@@ -34,13 +44,24 @@ describe('inline-require', () => {
         })
     })
     it('should return an error if improper arguments are provided', () => {
-        inline(null, (err) => err.should.be.an('Error') )
-        inline({}, (err) => err.should.be.an('Error') )
-        inline([], (err) => err.should.be.an('Error') )
+        inline(null, err => err.should.be.an('Error') )
+        inline({}, err => err.should.be.an('Error') )
+        inline([], err => err.should.be.an('Error') )
     })
     it('should return an error if source file does not exist', (done) => {
         inline('./bogus', (err) => {
             err.should.be.an('Error')
+            done()
+        })
+    })
+    it('should return an error if a dependency does not exist', () => {
+        // handled by native module loader
+    })
+    it('should run on the command line', (done) => {
+        exec(`node ${index} ./local-dependencies.js`, { cwd: __dirname }, (err, stdout, stderr) => {
+            should.equal(err, null)
+            should.equal(stderr, '')
+            stdout.should.match(/const array = \[1,2,3\]/)
             done()
         })
     })

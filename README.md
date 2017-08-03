@@ -4,6 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/inline-require.svg)](https://badge.fury.io/js/inline-require)
 [![Build Status](https://img.shields.io/travis/msimmer/inline-require/master.svg?style=flat)](https://travis-ci.org/msimmer/inline-require)
+[![Coverage Status](https://coveralls.io/repos/github/msimmer/inline-require/badge.svg?branch=master)](https://coveralls.io/github/msimmer/inline-require?branch=master)
 
 Inline dependencies from required modules. Can be used as a module using `require` or on the CLI.
 

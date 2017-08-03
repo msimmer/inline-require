@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "./node_modules/.bin/babel index.es --presets es2015,stage-0 > index.js",
-    "prepublish": "yarn build && yarn test",
-    "preversion": "yarn build && yarn test",
-    "test": "mocha ./tests",
-    "all": "yarn build && mocha ./tests"
+    "prepublish": "yarn test",
+    "preversion": "yarn test",
+    "test": "yarn build && NODE_ENV=test mocha tests",
+    "istanbul": "NODE_ENV=coverage node_modules/.bin/istanbul cover --config .istanbul.yml node_modules/.bin/_mocha tests",
+    "coveralls": "NODE_ENV=coverage node_modules/.bin/istanbul cover --config .istanbul.yml node_modules/.bin/_mocha --report lcovonly tests && cat ./coverage/lcov.info | node_modules/.bin/coveralls && node_modules/.bin/rimraf ./coverage"
   },
   "bin": "./index.js",
   "repository": {
@@ -26,7 +27,10 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.1.0",
+    "coveralls": "^2.13.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
+    "rimraf": "^2.6.1",
     "should": "^11.2.1"
   }
 }

@@ -13,11 +13,6 @@ function inliner(fpath, callback) {
         return callback(new Error(`[inline] expects first argument to be a string, ${typeof fpath} given`))
     }
 
-
-    if (!fs.existsSync(path.resolve(fpath))) {
-        return callback(new Error(`${fpath} does not exist, aborting`))
-    }
-
     const re = /\brequire\s*\(\s*['"]([./]+[^'"]+)['"]\s*\)/g
     const tokens = []
 
@@ -30,11 +25,6 @@ function inliner(fpath, callback) {
 
             const [requireDeclaration, relativePath] = match
             const dpath = `${path.resolve(path.resolve(path.dirname(fpath)), relativePath)}.js`
-
-            if (!fs.existsSync(dpath)) {
-                return callback(new Error(`Dependency [${dpath}] does not exist, aborting`))
-            }
-
             const required = require(dpath)
             const dependency = typeof required === 'function' ? String(required) : JSON.stringify(required)
 
@@ -60,6 +50,7 @@ function inliner(fpath, callback) {
 
 }
 
+/* istanbul ignore next */
 if (require.main === module) { // called from CLI
     if (process.argv && process.argv[2]) {
         inliner(process.argv[2], (err, data) => {

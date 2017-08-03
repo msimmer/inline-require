@@ -2,3 +2,5 @@
 node_modules
 /index.js
 package-lock*
+/coverage
+yarn-error.log
