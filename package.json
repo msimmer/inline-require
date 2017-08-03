@@ -1,6 +1,6 @@
 {
   "name": "inline-require",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Replace require'd files with the files' contents",
   "main": "index.js",
   "scripts": {
