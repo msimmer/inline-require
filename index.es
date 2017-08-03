@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const REGEXP_REQUIRE = new RegExp(/\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/)
+const REGEXP_REQUIRE = new RegExp(/\brequire\s*\(\s*['"]([./]+[^'"]+)['"]\s*\)/)
 
 function inliner(fpath, callback) {
     if (!fpath || typeof fpath !== 'string') {
