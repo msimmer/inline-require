@@ -9,6 +9,7 @@
     "preversion": "yarn build && yarn test",
     "test": "mocha ./tests"
   },
+  "bin": "./index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/msimmer/inline-require.git"
