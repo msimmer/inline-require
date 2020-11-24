@@ -24,7 +24,8 @@ function inliner(fpath, callback) {
         while ((match = re.exec(_data)) !== null) {
 
             const [requireDeclaration, relativePath] = match
-            const dpath = `${path.resolve(path.resolve(path.dirname(fpath)), relativePath)}.js`
+            const dpath = `${path.resolve(path.resolve(path.dirname(fpath)), relativePath)}`
+            if (!dpath.endsWith('.js')) { dpath += '.js' }
             const required = require(dpath)
             const dependency = typeof required === 'function' ? String(required) : JSON.stringify(required)
 
